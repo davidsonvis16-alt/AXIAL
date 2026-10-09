@@ -96,10 +96,16 @@ export default function Shell() {
         </header>
         <main className="mx-auto max-w-[1240px] px-4 pb-28 pt-6 sm:px-6 lg:pb-12"><Outlet /></main>
       </div>
-      <nav aria-label="Quick" className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface/95 backdrop-blur lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {[NAV[0], NAV[1], NAV[4], NAV[3], NAV[8]].map(({ to, label, icon: I, end }) => (
-          <NavLink key={to} to={to} end={end} className={({ isActive }) => cn('flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium', isActive ? 'text-ink' : 'text-muted')}>
-            {({ isActive }) => (<><I className={cn('h-5 w-5', isActive && 'text-cyan-ink')} />{label.replace('Savings vaults', 'Vaults').replace('Subscriptions', 'Subs').replace('Notifications', 'Alerts')}</>)}
+      <nav aria-label="Quick" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface/95 backdrop-blur lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        {([[NAV[0], 'Home'], [NAV[1], 'Activity'], [NAV[4], 'Subs'], [NAV[3], 'Vaults'], [NAV[8], 'Alerts']] as const).map(([{ to, icon: I, end }, short]) => (
+          <NavLink key={to} to={to} end={end} className={({ isActive }) => cn('flex h-14 min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium leading-none', isActive ? 'text-ink' : 'text-muted')}>
+            {({ isActive }) => (<>
+              <span className="relative">
+                <I className={cn('h-5 w-5', isActive && 'text-cyan-ink')} />
+                {to === '/app/notifications' && unread > 0 && <span className="absolute -right-1 -top-0.5 h-2 w-2 rounded-full bg-cyan ring-2 ring-surface" />}
+              </span>
+              <span className="w-full truncate text-center">{short}</span>
+            </>)}
           </NavLink>
         ))}
       </nav>
