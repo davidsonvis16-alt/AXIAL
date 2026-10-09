@@ -42,6 +42,14 @@ function NoBackend() {
   )
 }
 
+// Without a backend, sign-up/sign-in open the browser-only demo using the details entered.
+// Passwords are validated but never stored.
+const pause = () => new Promise((r) => setTimeout(r, 700))
+const nameFromEmail = (email: string) => email.split('@')[0].split(/[._-]+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ') || 'You'
+const storedDemoName = (email: string): string | null => {
+  try { const p = JSON.parse(localStorage.getItem('axial-demo:profile') ?? 'null'); return p?.email?.toLowerCase() === email.trim().toLowerCase() ? p.full_name : null } catch { return null }
+}
+
 const loginSchema = z.object({ email: z.string().email('Enter a valid email'), password: z.string().min(1, 'Enter your password') })
 export function Login() {
   const { mode, startDemo } = useApp()
@@ -49,8 +57,14 @@ export function Login() {
   const loc = useLocation() as { state?: { from?: string } }
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<z.infer<typeof loginSchema>>({ resolver: zodResolver(loginSchema) })
   useEffect(() => { if (mode) nav(loc.state?.from ?? '/app', { replace: true }) }, [mode, nav, loc.state])
-  if (!hasSupabase) return <Frame title="Sign in"><NoBackend /></Frame>
   const onSubmit = handleSubmit(async (v) => {
+    if (!hasSupabase) {
+      await pause()
+      const known = storedDemoName(v.email)
+      startDemo({ email: v.email.trim(), full_name: known ?? nameFromEmail(v.email) })
+      toast.ok(`Welcome back${known ? `, ${known.split(' ')[0]}` : ''}`)
+      return
+    }
     const { error } = await supabase!.auth.signInWithPassword(v)
     if (error) toast.error(error.message.includes('Email not confirmed') ? 'Confirm your email first — check your inbox for the link.' : error.message)
   })
@@ -74,10 +88,11 @@ const regSchema = z.object({
   referral_code: z.string().trim().max(12).optional(),
 })
 export function Register() {
+  const { startDemo } = useApp()
+  const nav = useNavigate()
   const [params] = useSearchParams()
   const [sentTo, setSentTo] = useState<string | null>(null)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<z.infer<typeof regSchema>>({ resolver: zodResolver(regSchema), defaultValues: { referral_code: params.get('ref') ?? '' } })
-  if (!hasSupabase) return <Frame title="Create your account"><NoBackend /></Frame>
   if (sentTo) return (
     <Frame title="Check your inbox">
       <div className="flex gap-3 rounded-xl border border-line bg-surface p-4 text-sm"><MailCheck className="h-5 w-5 shrink-0 text-cyan-ink" /><p>We sent a confirmation link to <strong>{sentTo}</strong>. Open it to verify your email, then sign in.</p></div>
@@ -85,6 +100,13 @@ export function Register() {
     </Frame>
   )
   const onSubmit = handleSubmit(async (v) => {
+    if (!hasSupabase) {
+      await pause()
+      startDemo({ full_name: v.full_name.trim(), email: v.email.trim() })
+      toast.ok(`Welcome to Axial, ${v.full_name.trim().split(' ')[0]}`)
+      nav('/app', { replace: true })
+      return
+    }
     const { error } = await supabase!.auth.signUp({ email: v.email, password: v.password, options: { emailRedirectTo: `${location.origin}/login`, data: { full_name: v.full_name, referral_code: v.referral_code || undefined } } })
     if (error) toast.error(error.message)
     else setSentTo(v.email)
@@ -106,11 +128,10 @@ export function Forgot() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
-  if (!hasSupabase) return <Frame title="Reset your password"><NoBackend /></Frame>
   return (
     <Frame title="Reset your password" sub="We'll email you a link to choose a new one.">
       {sent ? <p className="rounded-xl border border-line bg-surface p-4 text-sm">If an account exists for <strong>{email}</strong>, a reset link is on its way.</p> : (
-        <form className="space-y-4" onSubmit={async (e) => { e.preventDefault(); setBusy(true); const { error } = await supabase!.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/update-password` }); setBusy(false); if (error) toast.error(error.message); else setSent(true) }}>
+        <form className="space-y-4" onSubmit={async (e) => { e.preventDefault(); setBusy(true); if (!hasSupabase) { await pause(); setBusy(false); setSent(true); return } const { error } = await supabase!.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/update-password` }); setBusy(false); if (error) toast.error(error.message); else setSent(true) }}>
           <Field label="Email"><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
           <Button type="submit" className="w-full" loading={busy}>Send reset link</Button>
         </form>

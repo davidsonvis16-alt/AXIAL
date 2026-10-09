@@ -13,7 +13,10 @@ export const demoProfile = (): Profile => ({
   notify_push: false, hide_amounts: false, custom_categories: [], referral_code: 'DEMO2026', created_at: new Date().toISOString(),
 })
 
-export function seedDemo() {
+export type DemoUser = { full_name: string; email: string }
+const codeFor = (name: string) => (name.replace(/[^a-z]/gi, '').slice(0, 5).toUpperCase() || 'AXIAL') + String(new Date().getFullYear())
+
+export function seedDemo(who?: DemoUser) {
   demoStore.clear()
   const t = new Date()
   const d = (n: number) => iso(subDays(t, n))
@@ -118,5 +121,5 @@ export function seedDemo() {
     { id: id(), referrer_id: DEMO_USER, referred_user_id: id(), status: 'pending', reason: null, points: 0, created_at: new Date(d(3)).toISOString(), qualified_at: null },
   ] as never)
   demoStore.write('badges', [{ user_id: DEMO_USER, badge_key: 'no_surprises', earned_at: new Date(d(20)).toISOString() }, { user_id: DEMO_USER, badge_key: 'connector', earned_at: new Date(d(30)).toISOString() }] as never)
-  try { localStorage.setItem('axial-demo:profile', JSON.stringify(demoProfile())) } catch { /* ignore */ }
+  try { localStorage.setItem('axial-demo:profile', JSON.stringify(who ? { ...demoProfile(), ...who, referral_code: codeFor(who.full_name) } : demoProfile())) } catch { /* ignore */ }
 }
