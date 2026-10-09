@@ -65,7 +65,7 @@ export default function Shell() {
   )
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen overflow-x-clip bg-bg">
       <aside className={cn('fixed inset-y-0 left-0 z-30 hidden bg-navy lg:block transition-[width]', collapsed ? 'w-[68px]' : 'w-[232px]')}>{side()}</aside>
       {drawer && (
         <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setDrawer(false)}>
@@ -142,7 +142,7 @@ function GlobalSearch() {
     ].slice(0, 9)
   }, [q, data])
   return (
-    <div className="relative w-full max-w-sm">
+    <div className="relative w-full min-w-0 max-w-sm">
       <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
       <input value={q} onChange={(e) => { setQ(e.target.value); setOpen(true) }} onFocus={() => setOpen(true)} onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder="Search transactions, subscriptions…" aria-label="Search" className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-3 text-sm placeholder:text-muted focus:border-cyan focus:outline-none" />

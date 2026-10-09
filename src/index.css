@@ -10,7 +10,12 @@
   --bg: 8 20 38; --surface: 16 39 70; --sunken: 12 29 53; --ink: 247 249 252; --muted: 140 154 175; --line: 34 59 94; --cyan-ink: 54 214 245;
   color-scheme: dark;
 }
-html, body { background: rgb(var(--bg)); color: rgb(var(--ink)); }
+html, body { background: rgb(var(--bg)); color: rgb(var(--ink)); max-width: 100%; overflow-x: hidden; overflow-x: clip; overscroll-behavior: none; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; }
+img, svg, video, canvas { max-width: 100%; }
+/* iOS zooms into inputs under 16px on focus, which shifts the whole page */
+@media (max-width: 639px) { input, select, textarea { font-size: 16px !important; } }
 body { font-family: 'Hanken Grotesk', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 .num { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
 :focus-visible { outline: 2px solid #36D6F5; outline-offset: 2px; border-radius: 6px; }
