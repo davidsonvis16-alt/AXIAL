@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Bell, CalendarClock, ChevronsLeft, Gift, LayoutGrid, LogOut, Menu, Moon, PiggyBank, Receipt, Search, Settings, Sun, Users, Wallet, Workflow, X } from 'lucide-react'
+import { Bell, Briefcase, CalendarClock, Landmark, ChevronsLeft, Gift, LayoutGrid, LogOut, Menu, Moon, PiggyBank, Receipt, Search, Settings, Sun, Users, Wallet, Workflow, X } from 'lucide-react'
 import { useApp } from '@/data/AppData'
 import { Logo, LogoMark } from './brand'
 import { cn } from './kit'
@@ -12,6 +12,8 @@ export const NAV = [
   { to: '/app/vaults', label: 'Savings vaults', icon: PiggyBank },
   { to: '/app/subscriptions', label: 'Subscriptions', icon: CalendarClock },
   { to: '/app/rules', label: 'Rules', icon: Workflow },
+  { to: '/app/payroll', label: 'Payroll', icon: Briefcase },
+  { to: '/app/nation', label: 'Public finance', icon: Landmark },
   { to: '/app/shared', label: 'Shared', icon: Users },
   { to: '/app/referrals', label: 'Referrals', icon: Gift },
   { to: '/app/notifications', label: 'Notifications', icon: Bell },
@@ -92,7 +94,7 @@ export default function Shell() {
         <main className="mx-auto max-w-[1240px] px-4 pb-28 pt-6 sm:px-6 lg:pb-12"><Outlet /></main>
       </div>
       <nav aria-label="Quick" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface/95 backdrop-blur lg:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        {([[NAV[0], 'Home'], [NAV[1], 'Activity'], [NAV[4], 'Subs'], [NAV[3], 'Vaults'], [NAV[8], 'Alerts']] as const).map(([{ to, icon: I, end }, short]) => (
+        {([[NAV[0], 'Home'], [NAV[1], 'Activity'], [NAV[4], 'Subs'], [NAV[3], 'Vaults'], [NAV.find((n) => n.label === 'Notifications')!, 'Alerts']] as const).map(([{ to, icon: I, end }, short]) => (
           <NavLink key={to} to={to} end={end} className={({ isActive }) => cn('flex h-14 min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium leading-none', isActive ? 'text-ink' : 'text-muted')}>
             {({ isActive }) => (<>
               <span className="relative">

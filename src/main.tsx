@@ -18,6 +18,8 @@ const Shared = lazy(() => import('@/pages/Shared'))
 const Referrals = lazy(() => import('@/pages/Referrals'))
 const Notifications = lazy(() => import('@/pages/Notifications'))
 const Settings = lazy(() => import('@/pages/Settings'))
+const Payroll = lazy(() => import('@/pages/Payroll'))
+const Nation = lazy(() => import('@/pages/Nation'))
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { ready, mode, profile, error } = useApp()
@@ -41,7 +43,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/auth/update-password" element={<UpdatePassword />} />
           <Route path="/invite/:token" element={<InviteAccept />} />
           <Route path="/app" element={<Protected><Shell /></Protected>}>
-            {[['', Overview], ['transactions', Transactions], ['budgets', Budgets], ['vaults', Vaults], ['subscriptions', Subscriptions], ['rules', Rules], ['shared', Shared], ['referrals', Referrals], ['notifications', Notifications], ['settings', Settings]].map(([p, C]) => {
+            {[['', Overview], ['transactions', Transactions], ['budgets', Budgets], ['vaults', Vaults], ['subscriptions', Subscriptions], ['rules', Rules], ['payroll', Payroll], ['nation', Nation], ['shared', Shared], ['referrals', Referrals], ['notifications', Notifications], ['settings', Settings]].map(([p, C]) => {
               const Page = C as React.ComponentType
               return <Route key={p as string} index={p === ''} path={p === '' ? undefined : (p as string)} element={<Suspense fallback={<div className="py-20 text-center text-sm text-muted">Loading…</div>}><Page /></Suspense>} />
             })}

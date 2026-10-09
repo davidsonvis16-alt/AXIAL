@@ -238,6 +238,47 @@ export interface Badge {
   earned_at: Timestamp
 }
 
+export interface Employee {
+  id: string
+  user_id: string
+  full_name: string
+  role: string | null
+  phone: string | null
+  kra_pin: string | null
+  pay_method: 'mpesa' | 'bank' | 'cash'
+  bank_account: string | null
+  gross_salary: number
+  active: boolean
+  created_at: Timestamp
+}
+
+export interface PayrollLine {
+  employee_id: string
+  full_name: string
+  role: string | null
+  pay_method: Employee['pay_method']
+  gross: number
+  nssf: number
+  shif: number
+  housing_levy: number
+  paye: number
+  net: number
+  employer_nssf: number
+  employer_housing_levy: number
+}
+
+export interface PayrollRun {
+  id: string
+  user_id: string
+  period: string // yyyy-mm
+  paid_on: ISODate
+  lines: PayrollLine[]
+  total_gross: number
+  total_net: number
+  employer_cost: number
+  created_at: Timestamp
+}
+
 export interface Tables {
   transactions: Transaction
   budgets: Budget
@@ -255,11 +296,13 @@ export interface Tables {
   space_activity: SpaceActivity
   referrals: Referral
   badges: Badge
+  employees: Employee
+  payroll_runs: PayrollRun
 }
 export type TableName = keyof Tables
 
 export const DEFAULT_CATEGORIES = [
   'Food', 'Rent', 'Transport', 'Education', 'Entertainment', 'Subscriptions',
-  'Shopping', 'Utilities', 'Business', 'Health', 'Other',
+  'Shopping', 'Utilities', 'Business', 'Payroll', 'Health', 'Other',
 ] as const
 export const INCOME_CATEGORIES = ['Salary', 'Freelance', 'Business', 'Allowance', 'Gift', 'Other income'] as const
