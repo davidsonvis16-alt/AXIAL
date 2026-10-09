@@ -1,0 +1,13 @@
+-- OPTIONAL: email delivery for reminders.
+-- 1. Deploy the function:      supabase functions deploy send-email-notifications
+-- 2. Set its secrets:          supabase secrets set RESEND_API_KEY=... EMAIL_FROM="Axial <reminders@yourdomain.com>" CRON_SECRET=<random string>
+-- 3. Replace the two placeholders below and run this in the SQL editor.
+create extension if not exists pg_net with schema extensions;
+
+select cron.schedule('axial-email-notifications', '10 * * * *', $$
+  select net.http_post(
+    url := 'https://<PROJECT_REF>.supabase.co/functions/v1/send-email-notifications',
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', '<CRON_SECRET>'),
+    body := '{}'::jsonb
+  )
+$$);
