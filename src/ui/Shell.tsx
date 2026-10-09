@@ -25,7 +25,7 @@ export function useTheme() {
 }
 
 export default function Shell() {
-  const { mode, profile, data, signOut } = useApp()
+  const { profile, data, signOut } = useApp()
   const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem('axial-sidebar') === '1' } catch { return false } })
   const [drawer, setDrawer] = useState(false)
   const { dark, setDark } = useTheme()
@@ -77,11 +77,6 @@ export default function Shell() {
         </div>
       )}
       <div className={cn('transition-[padding]', collapsed ? 'lg:pl-[68px]' : 'lg:pl-[232px]')}>
-        {mode === 'demo' && (
-          <div className="bg-warn/20 px-4 py-2 text-center text-[13px] text-ink">
-            <strong>Demo mode.</strong> You're looking at sample data stored only in this browser — none of it is a real transaction.
-          </div>
-        )}
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-bg/85 px-4 backdrop-blur sm:px-6">
           <button className="rounded-md p-1.5 text-muted hover:bg-sunken lg:hidden" onClick={() => setDrawer(true)} aria-label="Open menu"><Menu className="h-5 w-5" /></button>
           <span className="lg:hidden"><LogoMark className="h-7 w-7" /></span>
