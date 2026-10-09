@@ -11,7 +11,7 @@ import { demoProfile, seedDemo, type DemoUser } from './demoSeed'
 
 export type Mode = 'demo' | 'live'
 type Data = { [K in TableName]: Tables[K][] }
-const TABLES: TableName[] = ['transactions', 'budgets', 'vaults', 'vault_entries', 'subscriptions', 'subscription_prices', 'rules', 'rule_events', 'notifications', 'spaces', 'space_members', 'space_invites', 'space_expenses', 'space_activity', 'referrals', 'badges']
+const TABLES: TableName[] = ['transactions', 'budgets', 'vaults', 'vault_entries', 'subscriptions', 'subscription_prices', 'rules', 'rule_events', 'notifications', 'spaces', 'space_members', 'space_invites', 'space_expenses', 'space_activity', 'referrals', 'badges', 'employees', 'payroll_runs']
 const empty = () => Object.fromEntries(TABLES.map((t) => [t, []])) as unknown as Data
 
 interface Ctx {

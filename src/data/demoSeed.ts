@@ -4,6 +4,8 @@ import { addDays, subDays, subMonths } from 'date-fns'
 import { iso } from '@/domain/finance'
 import type { Profile } from '@/domain/types'
 import { DEMO_USER, demoStore } from './adapters'
+import { payrollLine, payrollTotals } from '@/domain/payroll'
+import type { Employee } from '@/domain/types'
 
 const id = () => crypto.randomUUID()
 
@@ -121,5 +123,14 @@ export function seedDemo(who?: DemoUser) {
     { id: id(), referrer_id: DEMO_USER, referred_user_id: id(), status: 'pending', reason: null, points: 0, created_at: new Date(d(3)).toISOString(), qualified_at: null },
   ] as never)
   demoStore.write('badges', [{ user_id: DEMO_USER, badge_key: 'no_surprises', earned_at: new Date(d(20)).toISOString() }, { user_id: DEMO_USER, badge_key: 'connector', earned_at: new Date(d(30)).toISOString() }] as never)
+  const staff: Employee[] = [
+    ['Achieng Otieno', 'Shop attendant', 28000, 'mpesa', '0712 345 678'], ['Kevin Mwangi', 'Delivery rider', 22000, 'mpesa', '0722 908 114'],
+    ['Faith Njeri', 'Bookkeeper (part-time)', 45000, 'bank', null], ['Omar Hassan', 'Night guard', 18000, 'cash', null],
+  ].map(([full_name, role, gross_salary, pay_method, phone], i) => ({ id: id(), user_id: DEMO_USER, full_name, role, gross_salary, pay_method, phone, bank_account: pay_method === 'bank' ? 'Equity 0170 2938 4411' : null, kra_pin: null, active: true, created_at: subMonths(t, 4 - i * 0.5).toISOString() }) as Employee)
+  demoStore.write('employees', staff as never)
+  demoStore.write('payroll_runs', [1, 2].map((m) => {
+    const lines = staff.map(payrollLine), tt = payrollTotals(lines), paid = new Date(subMonths(t, m).getFullYear(), subMonths(t, m).getMonth() + 1, 0)
+    return { id: id(), user_id: DEMO_USER, period: iso(paid).slice(0, 7), paid_on: iso(paid), lines, total_gross: tt.total_gross, total_net: tt.total_net, employer_cost: tt.employer_cost, created_at: paid.toISOString() }
+  }) as never)
   try { localStorage.setItem('axial-demo:profile', JSON.stringify(who ? { ...demoProfile(), ...who, referral_code: codeFor(who.full_name) } : demoProfile())) } catch { /* ignore */ }
 }

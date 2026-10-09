@@ -49,7 +49,7 @@ export const liveAdapter = (): Adapter => {
 }
 
 // Postgres numeric arrives as string — normalise money columns.
-const MONEY = ['amount', 'goal_amount', 'threshold', 'previous_amount', 'approval_threshold', 'points']
+const MONEY = ['amount', 'goal_amount', 'threshold', 'previous_amount', 'approval_threshold', 'points', 'gross_salary', 'total_gross', 'total_net', 'employer_cost']
 function numify(r: Record<string, unknown>) {
   for (const k of MONEY) if (typeof r[k] === 'string') r[k] = Number(r[k])
   return r
