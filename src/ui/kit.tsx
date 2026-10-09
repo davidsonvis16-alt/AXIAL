@@ -88,7 +88,7 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   if (!open) return null
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy/50 backdrop-blur-[2px] sm:items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div role="dialog" aria-modal="true" aria-label={title} className={cn('max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-line bg-surface p-5 shadow-2xl sm:rounded-2xl', wide ? 'sm:max-w-2xl' : 'sm:max-w-md')}>
+      <div role="dialog" aria-modal="true" aria-label={title} className={cn('max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl border border-line bg-surface p-5 shadow-2xl sm:rounded-2xl', wide ? 'sm:max-w-2xl' : 'sm:max-w-md')}>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg font-semibold tracking-tight">{title}</h2>
           <button onClick={onClose} className="rounded-md p-1 text-muted hover:bg-sunken hover:text-ink" aria-label="Close"><X className="h-5 w-5" /></button>
