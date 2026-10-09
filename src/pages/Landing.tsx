@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { addDays } from 'date-fns'
 import { Check, ChevronDown, Lock, Minus, ShieldCheck, Workflow } from 'lucide-react'
 import { useApp } from '@/data/AppData'
-import { hasSupabase } from '@/data/supabase'
 import { iso, upcomingBillings } from '@/domain/finance'
 import type { Subscription } from '@/domain/types'
 import { Logo, OrbitDial, ServiceLogo } from '@/ui/brand'
@@ -22,7 +21,7 @@ export default function Landing() {
   const subs = useMemo(() => [sample('Spotify', 'spotify', 299, 2), sample('Netflix', 'netflix', 1100, 6), sample('YouTube Premium', 'youtube', 459, 11), sample('ChatGPT Plus', 'chatgpt', 2600, 15), sample('Google One', 'googleone', 250, 19), sample('Microsoft 365', 'microsoft365', 650, 24), sample('Gym', 'gym', 2500, 27)], [])
   const occ = upcomingBillings(subs, today, 30)
   const demo = () => { startDemo(); nav('/app') }
-  const primary = () => (mode ? nav('/app') : hasSupabase ? nav('/register') : demo())
+  const primary = () => (mode ? nav('/app') : nav('/register'))
 
   return (
     <div className="bg-bg text-ink">

@@ -7,7 +7,7 @@ import { evaluateRules } from '@/domain/rules'
 import { iso, reminderKey, remindersDueToday, rollForward } from '@/domain/finance'
 import { DEMO_USER, demoAdapter, liveAdapter, type Adapter, type Match, type Row } from './adapters'
 import { supabase, hasSupabase } from './supabase'
-import { demoProfile, seedDemo } from './demoSeed'
+import { demoProfile, seedDemo, type DemoUser } from './demoSeed'
 
 export type Mode = 'demo' | 'live'
 type Data = { [K in TableName]: Tables[K][] }
@@ -23,7 +23,7 @@ interface Ctx {
   data: Data
   loading: boolean
   error: string | null
-  startDemo(): void
+  startDemo(who?: DemoUser): void
   resetDemo(): void
   signOut(): Promise<void>
   saveProfile(p: Partial<Profile>): Promise<void>
@@ -39,6 +39,7 @@ export const useApp = () => useContext(AppCtx)
 export const useData = () => useContext(AppCtx).data
 
 const MODE_KEY = 'axial-mode'
+const readDemoProfile = (): Profile | null => { try { return JSON.parse(localStorage.getItem('axial-demo:profile') ?? 'null') } catch { return null } }
 const readMode = (): Mode | null => { try { return localStorage.getItem(MODE_KEY) === 'demo' ? 'demo' : null } catch { return null } }
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -154,12 +155,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     data,
     loading,
     error,
-    startDemo() {
+    startDemo(who) {
       try { localStorage.setItem(MODE_KEY, 'demo') } catch { /* ignore */ }
-      if (!localStorage.getItem('axial-demo:profile')) seedDemo()
+      const stored = readDemoProfile()
+      // A "sign-up" with a new email gets a fresh sample workspace in that person's name.
+      if (!stored || (who && (stored.email ?? '').toLowerCase() !== who.email.toLowerCase())) seedDemo(who)
+      const p = readDemoProfile() ?? demoProfile()
+      setProfile(p)
       setMode('demo')
+      if (mode === 'demo') loadAll()
     },
-    resetDemo() { seedDemo(); loadAll(); setProfile(demoProfile()) },
+    resetDemo() { const p = readDemoProfile(); seedDemo(p?.email && p.email !== demoProfile().email ? { full_name: p.full_name ?? 'You', email: p.email } : undefined); loadAll(); setProfile(readDemoProfile() ?? demoProfile()) },
     async signOut() {
       if (effectiveMode === 'demo') { try { localStorage.removeItem(MODE_KEY) } catch { /* ignore */ } setMode(null) }
       else await supabase?.auth.signOut()
